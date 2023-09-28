@@ -113,6 +113,47 @@ cg2            ZCCHC12    0.22       0.98        ...      0.79
 cg3            EWSR1      0.71       0.26        ...      0.08
 ```
 
+**Important notes/caveats:**
+
+- We drop probes that are not annotated to any gene. For instance, some probes do not have a corresponding gene and look like:
+```
+IlmnID                                                                cg00213748
+Name                                                                  cg00213748
+AddressA_ID                                                             30703409
+AlleleA_ProbeSeq               TTTTAACACCTAACACCATTTTAACAATAAAAATTCTACAAAAAAA...
+AddressB_ID                                                           36767301.0
+AlleleB_ProbeSeq               TTTTAACGCCTAACACCGTTTTAACGATAAAAATTCTACAAAAAAA...
+Infinium_Design_Type                                                           I
+Next_Base                                                                      A
+Color_Channel                                                                Red
+Forward_Sequence               TCTGTGGGACCATTTTAACGCCTGGCACCGTTTTAACGATGGAGGT...
+Genome_Build                                                                37.0
+CHR                                                                            Y
+MAPINFO                                                                8148233.0
+SourceSeq                      CGCCCCCTCCTGCAGAACCTCCATCGTTAAAACGGTGCCAGGCGTT...
+Chromosome_36                                                                  Y
+Coordinate_36                                                            8208233
+Strand                                                                         R
+Probe_SNPs                                                                   NaN
+Probe_SNPs_10                                                                NaN
+Random_Loci                                                                  NaN
+Methyl27_Loci                                                                NaN
+UCSC_RefGene_Name                                                            NaN
+UCSC_RefGene_Accession                                                       NaN
+UCSC_RefGene_Group                                                           NaN
+UCSC_CpG_Islands_Name                                       chrY:8147877-8148210
+Relation_to_UCSC_CpG_Island                                              S_Shore
+Phantom                                                                      NaN
+DMR                                                                          NaN
+Enhancer                                                                     NaN
+HMM_Island                                                     Y:8207555-8208234
+Regulatory_Feature_Name                                                      NaN
+Regulatory_Feature_Group                                                     NaN
+DHS                                                                          NaN
+```
+For our purposes, we drop these rows from further consideration.  
+
+
 ## Aggregation
 
 Given the example matrix immediately above, we have a choice to be made when considering how we combine multiple probe values targeting the same gene. Recall the goal of this module is to aggregate methylation "beta" values at the gene level for use with a tool like NetZoo's DRAGON (https://netzoo.github.io/zooanimals/dragon/).
