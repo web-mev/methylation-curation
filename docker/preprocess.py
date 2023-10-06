@@ -3,9 +3,23 @@ This script creates a simplified version of the probe-mapping file
 distributed by Illumina.
 """
 import argparse
-from tokenize import group
 import pandas as pd
-import numpy as np
+
+
+def feature_mapping(x):
+    """
+    This function is used with a pd.Series.map method to re-code
+    the feature identifiers (e.g. TSS200, 5'UTR)
+    to another identifer as desired.
+    """
+    # 5' and 3' UTR can cause parsing issues when 
+    # supplied as commandline arguments.
+    if x == "5'UTR":
+        return '5p_UTR'
+    elif x == "3'UTR":
+        return '3p_UTR'
+    else:
+        return x
 
 
 def parse_cl_args():
@@ -67,6 +81,10 @@ def main(input_file, output_file):
     df = pd.read_csv(input_file, skiprows=7)
     reformatted = df.apply(extract_feature_mapping, axis=1)
     reformatted = pd.concat(reformatted.tolist()).reset_index(drop=True)
+
+    # reformat the UTR names to something less prone to causing parse issues
+    reformatted['feature'] = reformatted['feature'].map(feature_mapping)
+
     reformatted.to_csv(output_file, sep='\t', index=False)
 
 
