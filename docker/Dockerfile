@@ -29,4 +29,4 @@ ADD requirements.txt /opt/software/
 RUN pip3 install -r /opt/software/requirements.txt
 
 ADD preprocess.py /opt/software/
-ADD reformatted_probe_mapping.tsv /opt/software/resources/
+ADD reformatted_probe_mapping.hm450.tsv /opt/software/resources/
