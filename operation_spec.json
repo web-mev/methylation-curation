@@ -1,0 +1,51 @@
+{
+    "name": "Methylation curation", 
+    "description": "Specify targeted gene regions to subset probe-level methylation matrices.", 
+    "inputs": {
+        "input_file": {
+            "description": "A table of methylation values, arranged as probes (rows) by samples (columns). This tool is agnostic to what the values represent (e.g. \"beta\" values), but we require that the probe identifiers correspond to a platform where we have mapping information. ", 
+            "name": "Input methylation matrix:", 
+            "required": true, 
+            "converter": "api.converters.data_resource.LocalDockerSingleVariableDataResourceConverter",
+            "spec": {
+                "attribute_type": "DataResource", 
+                "resource_type": "MTX", 
+                "many": false
+            }
+        }, 
+        "feature_selections": {
+            "description": "Which regions should we select from? You can choose more than one. The available regions are defined by Illumina in the probe mapping file.", 
+            "name": "Regions to select:", 
+            "required": true,
+            "converter": "api.converters.basic_attributes.StringListToCsvConverter",
+            "spec": { 
+                "attribute_type": "OptionString",
+                "options": ["1stExon","3p_UTR","5p_UTR","Body","TSS1500","TSS200"],
+                "many": true
+            }
+        },
+        "is_enhancer": {
+            "description": "Only select probes located in annotated enhancer regions? Enhancer regions are defined by Illumina in the probe mapping file.",
+            "name": "Use only enhancer loci:",
+            "required": false, 
+            "converter": "api.converters.basic_attributes.BooleanAsIntegerConverter",
+            "spec": {
+                "attribute_type": "Boolean",
+                "default": false
+            }
+        }
+    }, 
+    "outputs": {
+        "filtered_matrix": {
+            "required": true,
+            "converter": "api.converters.data_resource.LocalDockerSingleDataResourceConverter",
+            "spec": {
+                "attribute_type": "DataResource", 
+                "resource_type": "MTX",
+                "many": false
+            }
+        }
+    }, 
+    "mode": "local_docker",
+    "workspace_operation": true
+}

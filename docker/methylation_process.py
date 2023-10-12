@@ -1,5 +1,8 @@
 import argparse
 import sys
+import os
+import json
+
 import pandas as pd
 
 
@@ -50,13 +53,6 @@ def parse_cl_args():
         required=True
     )
     parser.add_argument(
-        '-o',
-        '--output',
-        help='Name of the output file',
-        dest='output_file',
-        required=True
-    )
-    parser.add_argument(
         '-p',
         '--platform',
         choices=PROBE_MAP_FILES.keys(),
@@ -71,9 +67,11 @@ def parse_cl_args():
         action='store_true'
     )
     parser.add_argument(
-        'features',
+        '-f',
+        '--features',
         help='Which features to use?',
-        nargs='+'
+        dest='features',
+        required=True
     )
     return parser.parse_args()
 
@@ -81,8 +79,10 @@ def parse_cl_args():
 if __name__ == '__main__':
 
     args = parse_cl_args()
+    working_dir = os.path.dirname(args.input_file)
+
     mapping_df = pd.read_table(PROBE_MAP_FILES[args.platform])
-    feature_set = set(args.features)
+    feature_set = set([x.strip() for x in args.features.split(',')])
     check_features(mapping_df, feature_set)
 
     # read the probe-level methylation matrix:
@@ -108,4 +108,11 @@ if __name__ == '__main__':
         sys.exit(1)
     else:
         keep_cols = [GENE_COL] + list(meth_matrix.columns)
-        merged_df[keep_cols].to_csv(args.output_file, sep='\t', index=False)
+        fout = (f'{working_dir}/filtered_matrix.{"+".join(feature_set)}'
+                f'{".enhancers" if args.enhancer else ""}.tsv')
+        merged_df[keep_cols].to_csv(fout, sep='\t', index=False)
+
+    outputs = {
+        'filtered_matrix': fout
+    }
+    json.dump(outputs, open(os.path.join(working_dir, 'outputs.json'), 'w'))
