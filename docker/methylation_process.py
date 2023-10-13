@@ -1,9 +1,11 @@
 import argparse
+from re import M
 import sys
 import os
 import json
 
 import pandas as pd
+from scipy.stats.mstats import gmean
 
 
 # name of the column in the probe mapping file which
@@ -26,6 +28,17 @@ GENE_COL = 'gene_id'
 # and the associated probe mapping file
 PROBE_MAP_FILES = {
     'HM450': '/opt/software/resources/reformatted_probe_mapping.hm450.tsv',
+}
+
+# Since we can have multiple probes map to a single gene, we need to aggregate
+# those somehow. The keys are values accepted by the commandline. The values
+# are keywords/functions/etc recognized by the Pandas dataframe groupby.agg 
+# https://pandas.pydata.org/docs/reference/api/pandas.core.groupby.DataFrameGroupBy.aggregate.html
+AGG_STRATEGY = {
+    'Sum': 'sum',
+    'Median': 'median',
+    'Mean': 'mean',
+    'Geometric mean': gmean
 }
 
 
@@ -65,6 +78,14 @@ def parse_cl_args():
         '--enhancer',
         help='Require to the probe to be annotated in an enhancer region?',
         action='store_true'
+    )
+    parser.add_argument(
+        '-a',
+        '--agg',
+        choices=AGG_STRATEGY.keys(),
+        help='Aggregation strategy for multiple probes per gene',
+        dest='agg_strategy',
+        required=True
     )
     parser.add_argument(
         '-f',
@@ -108,7 +129,15 @@ if __name__ == '__main__':
         sys.exit(1)
     else:
         keep_cols = [GENE_COL] + list(meth_matrix.columns)
+        merged_df = merged_df[keep_cols]
+
+        # we now need to apply the requested aggregation strategy. In general,
+        # we have >=1 rows for each gene
+        agg_choice = AGG_STRATEGY[args.agg_strategy]
+        merged_df = merged_df.groupby(GENE_COL).agg(agg_choice)
+    
         fout = (f'{working_dir}/filtered_matrix.{"+".join(feature_set)}'
+                f'.{args.agg_strategy}'
                 f'{".enhancers" if args.enhancer else ""}.tsv')
         merged_df[keep_cols].to_csv(fout, sep='\t', index=False)
 

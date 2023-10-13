@@ -1,5 +1,1 @@
-/usr/bin/python3 /opt/software/methylation_process.py \
-    -i "{{input_file}}" \
-    -p HM450 \
-    {% if is_enhancer %} -e {% endif %} \
-    {{ feature_selections }}
+/usr/bin/python3 /opt/software/methylation_process.py -i "{{input_file}}" -p HM450 {% if is_enhancer %} -e {% endif %} -a "{{aggregation}}" -f {{ feature_selections }}

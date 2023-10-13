@@ -24,6 +24,16 @@
                 "many": true
             }
         },
+        "aggregation": {
+            "description": "There are often multiple probes per gene. When we map these at the gene level, how should be combine those multiple probes?", 
+            "name": "Aggregation method:", 
+            "required": true,
+            "converter": "api.converters.basic_attributes.StringConverter",
+            "spec": { 
+                "attribute_type": "OptionString",
+                "options": ["Mean","Median","Geometric mean", "Sum"]
+            }
+        },
         "is_enhancer": {
             "description": "Only select probes located in annotated enhancer regions? Enhancer regions are defined by Illumina in the probe mapping file.",
             "name": "Use only enhancer loci:",
