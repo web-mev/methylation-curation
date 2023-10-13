@@ -1,5 +1,5 @@
 /usr/bin/python3 /opt/software/methylation_process.py \
-    -i "{{raw_counts}}" \
+    -i "{{input_file}}" \
     -p HM450 \
     {% if is_enhancer %} -e {% endif %} \
     {{ feature_selections }}
