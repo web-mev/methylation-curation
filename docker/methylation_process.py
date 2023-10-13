@@ -137,9 +137,9 @@ if __name__ == '__main__':
         merged_df = merged_df.groupby(GENE_COL).agg(agg_choice)
     
         fout = (f'{working_dir}/filtered_matrix.{"+".join(feature_set)}'
-                f'.{args.agg_strategy}'
+                f'.{args.agg_strategy.replace(" ", "_")}'
                 f'{".enhancers" if args.enhancer else ""}.tsv')
-        merged_df[keep_cols].to_csv(fout, sep='\t', index=False)
+        merged_df.to_csv(fout, sep='\t', index=True, float_format='%.3f')
 
     outputs = {
         'filtered_matrix': fout
