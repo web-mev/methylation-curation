@@ -1,5 +1,4 @@
 import argparse
-from re import M
 import sys
 import os
 import json
@@ -27,7 +26,7 @@ GENE_COL = 'gene_id'
 # key-value pairs for the short name of the platform
 # and the associated probe mapping file
 PROBE_MAP_FILES = {
-    'HM450': '/opt/software/resources/reformatted_probe_mapping.hm450.tsv',
+    'HM450': '/opt/resources/reformatted_probe_mapping.hm450.tsv',
 }
 
 # Since we can have multiple probes map to a single gene, we need to aggregate

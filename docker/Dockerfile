@@ -1,33 +1,16 @@
-FROM ubuntu:jammy
+FROM mambaorg/micromamba
 
-RUN apt-get update && \
-    apt-get install -y \
-    build-essential \
-    wget \
-    git \
-    python3 \
-    python3-pip
+# for building the conda env
+COPY --chown=$MAMBA_USER:$MAMBA_USER environment.yml /tmp/environment.yml
+# Build the environment based on the yml file
+RUN micromamba install -y -n base -f /tmp/environment.yml \
+  && micromamba clean --all --yes
 
-# Install all software under /opt/software:
-RUN mkdir -p /opt/software 
-ADD dragon.py /opt/software/ 
-FROM ubuntu:jammy
+USER root
+RUN mkdir -p /opt/resources && \
+  chmod a+r /opt/resources && \
+  chown $MAMBA_USER:$MAMBA_USER /opt/resources
 
-RUN apt-get update && \
-    apt-get install -y \
-    build-essential \
-    wget \
-    git \
-    python3 \
-    python3-pip
-
-# Install all software under /opt/software:
-RUN mkdir -p /opt/software && \
-    mkdir -p /opt/software/resources 
-
-ADD requirements.txt /opt/software/
-RUN pip3 install -r /opt/software/requirements.txt
-
-ADD preprocess.py /opt/software/
-ADD methylation_process.py /opt/software/
-ADD reformatted_probe_mapping.hm450.tsv /opt/software/resources/
+ADD preprocess.py /usr/local/bin
+ADD methylation_process.py /usr/local/bin
+ADD reformatted_probe_mapping.hm450.tsv /opt/resources/
